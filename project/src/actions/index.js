@@ -18,7 +18,7 @@ export function fetchProjectListFailure(err) {
 
 export function fetchProjectListRequest() {
   return (dispatch, getState) => {
-    const page = getState().page;
+    const page = getState().page + 1;
     dispatch({
       type: constants.FETCH_PROJECT_LIST_REQUEST,
     });

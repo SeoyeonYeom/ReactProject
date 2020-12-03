@@ -1,9 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styles from './Checkbox.module.scss';
 
 const Checkbox = ({
-  id,
-  name,
   text,
   handleChange,
 }) => {
@@ -13,18 +12,26 @@ const Checkbox = ({
 
   return (
     <label
-      htmlFor={id}
+      htmlFor="scrap"
       className={styles.checkbox}
     >
       <input
-        name={name}
         type="checkbox"
-        id={id}
+        id="scrap"
         onChange={handleCheck}
       />
       <span>{text}</span>
     </label>
   );
 };
+
+Checkbox.propTypes = {
+  text: PropTypes.string,
+  handleChange: PropTypes.func.isRequired,
+};
+
+Checkbox.defaultProps = {
+  text: null,
+}
 
 export default Checkbox;

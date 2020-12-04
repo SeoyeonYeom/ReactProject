@@ -5,7 +5,7 @@ const initialState = [];
 function getProjectList(state, action) {
   switch (action.type) {
     case constants.FETCH_PROJECT_LIST_SUCCESS:
-      const newArr = state.concat(action.payload);
+      const newArr = state.concat(action.payload.data);
       return newArr;
     default:
       return state;

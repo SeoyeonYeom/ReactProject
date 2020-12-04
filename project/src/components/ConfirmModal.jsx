@@ -8,7 +8,6 @@ const ConfirmModal = ({
   handleConfirmClick,
   isScrapped,
   isOpen,
-  id,
 }) => {
   return (
     <Fragment>
@@ -19,10 +18,10 @@ const ConfirmModal = ({
         isOpen={isOpen}
       >
         <h4 className={styles.title}>
-          {isScrapped ? '스크랩을 취소하시나요?' : '내 스크랩 리스트에 추가할까요?'}
+          {isScrapped ? '스크랩을 취소할까요?' : '내 스크랩 리스트에 추가할까요?'}
         </h4>
         <div className={styles.buttonWrapper}>
-          <button onClick={() => handleConfirmClick(id)}>네</button>
+          <button onClick={handleConfirmClick}>네</button>
           <button onClick={handleCancelClick}>아니요</button>
         </div>
       </ReactModal>

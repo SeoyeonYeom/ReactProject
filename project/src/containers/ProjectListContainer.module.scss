@@ -15,4 +15,13 @@
     grid-row-gap: 30px;
     grid-column-gap: 20px;
   }
+
+  .none {
+    height: 400px;
+    width: 100%;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+  }
 }

@@ -3,15 +3,17 @@ import ProjectItem from '../components/ProjectItem';
 import Checkbox from '../components/Checkbox';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
-import ConfirmModal from '../components/ConfirmModal';
+import { storageAvailable } from '../utils';
+import {
+  getFetching,
+  getProjectList,
+} from '../selectors';
 import styles from './ProjectListContainer.module.scss';
 
 class ProjectListContainer extends Component {
   state = {
-    isOnlyScrapped: true,
-    page: 0,
-    isShowModal: false,
-    fetching: false,
+    isOnlyScrapped: false,
+    scrappedList: [],
   }
 
   componentDidMount() {
@@ -21,45 +23,61 @@ class ProjectListContainer extends Component {
   }
 
   handleScroll = () => {
-    const { fetchProjectListRequest } = this.props;
-    const { page, fetching } = this.state;
+    const { fetchProjectListRequest, fetching } = this.props;
     const scrollHeight = document.documentElement.scrollHeight;
     const scrollTop = document.documentElement.scrollTop;
     const clientHeight = document.documentElement.clientHeight;
     if (scrollTop + clientHeight >= scrollHeight && fetching === false) {
-      console.log('pa');
-      fetchProjectListRequest(page);
+      fetchProjectListRequest();
     }
   };
+
+  getNewList = () => {
+    const { projectList } = this.props;
+    if (!storageAvailable('localStorage')) {
+      return projectList;
+    }
+    const scrappedList = JSON.parse(localStorage.getItem('scrappedList'));
+    this.setState({
+      scrappedList: scrappedList || [],
+    });
+  }
   
   handleCheck = checked => {
-    console.log(checked);
+    if (checked) {
+      this.getNewList();
+    }
     this.setState({
-      isOnlyScrapped: true,
+      isOnlyScrapped: checked,
     });
   }
 
-  showModal = id => {
+  addScrapped = item => {
+    const { scrappedList } = this.state;
+    const newArr = scrappedList.slice();
+    newArr.push(item);
+    localStorage.setItem('scrappedList', JSON.stringify(newArr));
     this.setState({
-      isShowModal: true,
+      scrappedList: newArr,
     });
-    console.log(id);
   }
 
-  addScrapped = id => {
-    console.log(id);
-    // 로컬 스토리지에 저장
+  removeScrapped = id => {
+    const { scrappedList } = this.state;
+    const newArr = scrappedList.slice().filter(item => item.id !== id);
+    localStorage.setItem('scrappedList', JSON.stringify(newArr));
     this.setState({
-      isShowModal: false,
+      scrappedList: newArr,
     });
   }
 
   render() {
     const { projectList } = this.props;
     const {
-      isShowModal,
       isOnlyScrapped,
+      scrappedList,
     } = this.state;
+    const showList = isOnlyScrapped ? scrappedList : projectList;
     return (
       <div className={styles.container}>
         <div className={styles.contentContainer}>
@@ -67,33 +85,34 @@ class ProjectListContainer extends Component {
             text="스크랩한 것만 보기"
             handleChange={this.handleCheck}
           />
-          <div className={styles.itemContainer}>
-            {projectList.map((item, i) => (
-              <ProjectItem
-                key={i}
-                item={item}
-                handleClick={this.showModal}
-              />
-            ))}
-          </div>
+          {showList.length > 0 ? (
+            <div className={styles.itemContainer}>
+              {showList.map((item, i) => (
+                <ProjectItem
+                  key={i}
+                  item={item}
+                  isScrapped={scrappedList.includes(item)}
+                  handleAddScrap={this.addScrapped}
+                  handleRemoveScrap={this.removeScrapped}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className={styles.none}>아이템이 없어요!</div>
+          )}
         </div>
-        <ConfirmModal
-          isOpen={isShowModal}
-          isScrapped={false}
-          handleCancelClick={() => this.setState({ isShowModal: false })}
-          handleConfirmClick={this.addScrapped}
-        />
       </div>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  projectList: state.projectList,
+  projectList: getProjectList(state),
+  fetching: getFetching(state),
 });
 
 const mapDispatchToProps = dispatch => ({
-  fetchProjectListRequest: page => dispatch(actions.fetchProjectListRequest(page)),
+  fetchProjectListRequest: () => dispatch(actions.fetchProjectListRequest()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectListContainer);

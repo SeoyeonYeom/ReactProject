@@ -14,14 +14,18 @@ const ProjectItem = ({
 }) => {
   const [isShowModal, setShowModal] = useState(false);
 
-  const confirmClick = () => {
+  const handleModal = () => {
     if (isScrapped) {
-      handleRemoveScrap(item.id);
+      setShowModal(true);
     } else {
       handleAddScrap(item);
     }
+  };
+
+  const confirmClick = () => {
+    handleRemoveScrap(item.id);
     setShowModal(false);
-  }
+  };
 
   return (
     <div className={styles.itemBox}>
@@ -42,7 +46,7 @@ const ProjectItem = ({
       >
         <button
           className={styles.scrapIconBtn}
-          onClick={() => setShowModal(true)}
+          onClick={handleModal}
         >
           <img
             src={isScrapped ? blue : scrapIcon}
@@ -65,7 +69,13 @@ const ProjectItem = ({
 
 ProjectItem.propTypes = {
   item: PropTypes.object.isRequired,
-  handleClick: PropTypes.func.isRequired,
+  handleAddScrap: PropTypes.func.isRequired,
+  handleRemoveScrap: PropTypes.func.isRequired,
+  isScrapped: PropTypes.bool,
 };
+
+ProjectItem.defaultProps = {
+  isScrapped: false,
+}
 
 export default ProjectItem;

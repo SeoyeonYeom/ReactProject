@@ -20,22 +20,25 @@ class ProjectListContainer extends Component {
     const { fetchProjectListRequest } = this.props;
     window.addEventListener('scroll', this.handleScroll);
     fetchProjectListRequest();
+    this.getNewList();
   }
 
   handleScroll = () => {
-    const { fetchProjectListRequest, fetching } = this.props;
+    const {
+      fetchProjectListRequest,
+      fetching,
+    } = this.props;
     const scrollHeight = document.documentElement.scrollHeight;
     const scrollTop = document.documentElement.scrollTop;
     const clientHeight = document.documentElement.clientHeight;
-    if (scrollTop + clientHeight >= scrollHeight && fetching === false) {
+    if (scrollTop + clientHeight >= scrollHeight && !fetching) {
       fetchProjectListRequest();
     }
   };
 
   getNewList = () => {
-    const { projectList } = this.props;
     if (!storageAvailable('localStorage')) {
-      return projectList;
+      return;
     }
     const scrappedList = JSON.parse(localStorage.getItem('scrappedList'));
     this.setState({
@@ -91,7 +94,7 @@ class ProjectListContainer extends Component {
                 <ProjectItem
                   key={i}
                   item={item}
-                  isScrapped={scrappedList.includes(item)}
+                  isScrapped={scrappedList.findIndex(o => o.id === item.id) > -1}
                   handleAddScrap={this.addScrapped}
                   handleRemoveScrap={this.removeScrapped}
                 />

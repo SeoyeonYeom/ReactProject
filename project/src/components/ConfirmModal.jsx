@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import ReactModal from 'react-modal';
 import styles from './ConfirmModal.module.scss';
